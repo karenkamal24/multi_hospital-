@@ -1,0 +1,25 @@
+{
+    "validation.required": "هذا الحقل مطلوب",
+    "validation.email": "يجب أن يكون بريد إلكتروني صحيح",
+    "validation.unique": "هذه القيمة مستخدمة بالفعل",
+    "validation.max": "يجب ألا يتجاوز :max حرف",
+    "validation.in": "القيمة المحددة غير صالحة",
+    "validation.confirmed": "تأكيد كلمة المرور غير متطابق",
+    "validation.string": "يجب أن يكون نص",
+    "validation.nullable": "هذا الحقل اختياري",
+
+    "register.success": "تم التسجيل بنجاح",
+    "register.failed": "حدث خطأ أثناء التسجيل",
+    "register.user_type_invalid": "نوع المستخدم يجب أن يكون patient أو donner فقط",
+    "register.email_exists": "البريد الإلكتروني مستخدم بالفعل",
+
+    "user.name": "الاسم",
+    "user.email": "البريد الإلكتروني",
+    "user.phone": "رقم الهاتف",
+    "user.gender": "الجنس",
+    "user.user_type": "نوع المستخدم",
+    "user.blood": "فصيلة الدم",
+    "user.password": "كلمة المرور",
+    "user.password_confirmation": "تأكيد كلمة المرور"
+}
+

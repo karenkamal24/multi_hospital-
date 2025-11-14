@@ -1,0 +1,25 @@
+{
+    "validation.required": "The :attribute field is required",
+    "validation.email": "The :attribute must be a valid email address",
+    "validation.unique": "The :attribute has already been taken",
+    "validation.max": "The :attribute may not be greater than :max characters",
+    "validation.in": "The selected :attribute is invalid",
+    "validation.confirmed": "The :attribute confirmation does not match",
+    "validation.string": "The :attribute must be a string",
+    "validation.nullable": "The :attribute field is optional",
+
+    "register.success": "Registration successful",
+    "register.failed": "An error occurred during registration",
+    "register.user_type_invalid": "User type must be patient or donner only",
+    "register.email_exists": "Email already exists",
+
+    "user.name": "Name",
+    "user.email": "Email",
+    "user.phone": "Phone",
+    "user.gender": "Gender",
+    "user.user_type": "User Type",
+    "user.blood": "Blood Type",
+    "user.password": "Password",
+    "user.password_confirmation": "Password Confirmation"
+}
+
