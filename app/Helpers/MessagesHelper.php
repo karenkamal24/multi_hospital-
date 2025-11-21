@@ -23,7 +23,7 @@ class MessagesHelper
     {
         return [
             'en' => [
-                // Validation messages
+       
                 'validation.failed' => 'Validation failed',
                 'validation.required' => 'The :attribute field is required',
                 'validation.email' => 'The :attribute must be a valid email address',
