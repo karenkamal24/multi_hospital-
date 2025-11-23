@@ -17,9 +17,19 @@ public static function send(
 ): JsonResponse {
     $data = self::prepareData($data, null);
 
+    // تحديد اللغة من الـheader
+    $locale = self::getLocaleFromRequest();
+
+    // إذا كان message مصفوفة (ar, en) أو string
+    if (is_array($message)) {
+        $finalMessage = $message[$locale] ?? $message['ar'] ?? $message['en'] ?? 'Success';
+    } else {
+        $finalMessage = $message;
+    }
+
     $response = [
         'status' => $code,
-        'message' => $message,
+        'message' => $finalMessage,
         'meta' => $meta ?? ($data['meta'] ?? null),
         'data' => $data['items'],
     ];
@@ -31,32 +41,61 @@ public static function send(
     return response()->json($response, $code);
 }
 
-    public static function success(string $message = 'Success response', $data = [], $resource = null): JsonResponse
+/**
+ * Get locale from request header (Accept-Language)
+ *
+ * @return string
+ */
+protected static function getLocaleFromRequest(): string
+{
+    $request = request();
+    $acceptLanguage = $request->header('Accept-Language', 'ar');
+
+    // استخراج اللغة الأولى من Accept-Language header
+    // مثال: "ar,en;q=0.9" -> "ar"
+    $locale = strtolower(explode(',', $acceptLanguage)[0]);
+    $locale = explode(';', $locale)[0]; // إزالة quality values
+    $locale = trim($locale);
+
+    // إذا كانت اللغة غير معروفة، استخدم العربية كافتراضي
+    if (!in_array($locale, ['ar', 'en'])) {
+        $locale = 'ar';
+    }
+
+    return $locale;
+}
+
+    public static function success(string|array $message = 'Success response', $data = [], $resource = null): JsonResponse
     {
         return self::send(Response::HTTP_OK, $message, $data, $resource);
     }
 
-    public static function created(string $message = 'Resource created successfully', $data = [], $resource = null): JsonResponse
+    public static function created(string|array $message = 'Resource created successfully', $data = [], $resource = null): JsonResponse
     {
         return self::send(Response::HTTP_CREATED, $message, $data, $resource);
     }
 
-    public static function badRequest(string $message, array $errors = []): JsonResponse
+    public static function badRequest(string|array $message, array $errors = []): JsonResponse
     {
         return self::send(Response::HTTP_BAD_REQUEST, $message, errors: $errors);
     }
 
-    public static function forbidden(string $message): JsonResponse
+    public static function forbidden(string|array $message): JsonResponse
     {
         return self::send(Response::HTTP_FORBIDDEN, $message);
     }
 
-    public static function validationError(string $message, $errors = [], $resource = null): JsonResponse
+    public static function notFound(string|array $message): JsonResponse
+    {
+        return self::send(Response::HTTP_NOT_FOUND, $message);
+    }
+
+    public static function validationError(string|array $message, $errors = [], $resource = null): JsonResponse
     {
         return self::send(Response::HTTP_UNPROCESSABLE_ENTITY, $message, $errors, $resource);
     }
 
-    public static function error(string $message): JsonResponse
+    public static function error(string|array $message): JsonResponse
     {
         return self::send(Response::HTTP_INTERNAL_SERVER_ERROR, $message);
     }

@@ -68,6 +68,15 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('fcm_token')
                     ->label('FCM Token')
                     ->maxLength(65535),
+
+                Forms\Components\Select::make('roles')
+                    ->label('الأدوار (Roles)')
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable()
+                    ->helperText('يمكنك اختيار أدوار متعددة للمستخدم')
+                    ->visible(fn () => class_exists('Spatie\Permission\Models\Role')),
             ]);
     }
 
@@ -111,6 +120,14 @@ class UserResource extends Resource
                     ->sortable()
                     ->visible(fn ($record) => $record && $record->user_type === 'hospital')
                     ->placeholder('لا يوجد مستشفى'),
+
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('الأدوار')
+                    ->badge()
+                    ->color('primary')
+                    ->separator(',')
+                    ->visible(fn () => class_exists('Spatie\Permission\Models\Role'))
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime()

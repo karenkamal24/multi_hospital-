@@ -20,6 +20,14 @@
     "user.user_type": "User Type",
     "user.blood": "Blood Type",
     "user.password": "Password",
-    "user.password_confirmation": "Password Confirmation"
+    "user.password_confirmation": "Password Confirmation",
+
+    "sos.success": "SOS request created successfully",
+    "sos.failed": "An error occurred while creating SOS request",
+    "sos.only_patient": "Only patients can create SOS requests",
+    "sos.blood_required": "Blood type must be specified",
+
+    "location.updated": "Location updated successfully",
+    "location.error": "An error occurred while updating location"
 }
 

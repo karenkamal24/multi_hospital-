@@ -20,6 +20,14 @@
     "user.user_type": "نوع المستخدم",
     "user.blood": "فصيلة الدم",
     "user.password": "كلمة المرور",
-    "user.password_confirmation": "تأكيد كلمة المرور"
+    "user.password_confirmation": "تأكيد كلمة المرور",
+
+    "sos.success": "تم إنشاء طلب SOS بنجاح",
+    "sos.failed": "حدث خطأ أثناء إنشاء طلب SOS",
+    "sos.only_patient": "فقط المريض يمكنه عمل طلب SOS",
+    "sos.blood_required": "يجب تحديد فصيلة الدم",
+
+    "location.updated": "تم تحديث الموقع بنجاح",
+    "location.error": "حدث خطأ أثناء تحديث الموقع"
 }
 

@@ -31,6 +31,7 @@ class RegisterRequest extends FormRequest
             'blood' => ['nullable', 'string', 'max:10'],
             'password' => ['required', 'confirmed', Password::defaults()],
             'fcm_token' => ['nullable', 'string'],
+            'image' => ['nullable', 'string'],
         ];
     }
 

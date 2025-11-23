@@ -22,7 +22,12 @@ class UserResource extends JsonResource
             'gender' => $this->gender,
             'user_type' => $this->user_type,
             'blood' => $this->blood,
+            'image' => $this->image,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
+            'fcm_token' => $this->when($request->user()?->id === $this->id, $this->fcm_token), // فقط للمستخدم نفسه
             'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

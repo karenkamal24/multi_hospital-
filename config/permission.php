@@ -76,7 +76,18 @@ return [
          * Change this if you want to name the related pivots other than defaults
          */
         'model_morph_key' => 'model_id',
+
+        /*
+         * Change this if you want to name the team foreign key other than defaults
+         */
+        'team_foreign_key' => 'team_id',
     ],
+
+    /*
+     * When set to true, teams support is enabled for roles and permissions.
+     * This allows you to have team-scoped roles and permissions.
+     */
+    'teams' => false,
 
     /*
      * When set to true, the method for checking permissions will be registered on the gate.

@@ -5,19 +5,18 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
-
-    // Add HasRoles trait if Spatie Permission is installed
-    // After running: composer install, uncomment the line below
-    // use Spatie\Permission\Traits\HasRoles;
+    use HasFactory, Notifiable, HasApiTokens, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -33,6 +32,9 @@ class User extends Authenticatable
         'blood',
         'password',
         'fcm_token',
+        'latitude',
+        'longitude',
+        'image',
     ];
 
     /**
@@ -180,4 +182,13 @@ class User extends Authenticatable
     {
         return $this->hasOne(Hospital::class);
     }
+
+    /**
+     * Get all hospital requests made by this user.
+     */
+    public function hospitalRequests(): HasMany
+    {
+        return $this->hasMany(HospitalRequest::class);
+    }
+
 }
