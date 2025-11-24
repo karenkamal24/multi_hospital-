@@ -116,13 +116,14 @@ class SosService
             ->with('user:id,name,phone,blood')
             ->selectRaw("
                 sos_requests.*,
+                sos_requests.radius_km,
                 (6371 * acos(
                     cos(radians(?)) * cos(radians(sos_requests.latitude)) *
                     cos(radians(sos_requests.longitude) - radians(?)) +
                     sin(radians(?)) * sin(radians(sos_requests.latitude))
                 )) AS distance
             ", [$donorLat, $donorLng, $donorLat])
-            ->having('distance', '<=', DB::raw('sos_requests.radius_km'))
+            ->havingRaw('distance <= radius_km')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($sosRequest) {

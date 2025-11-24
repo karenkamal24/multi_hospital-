@@ -95,13 +95,14 @@ class UserController extends Controller
                 ->with('user')
                 ->selectRaw("
                     sos_requests.*,
+                    sos_requests.radius_km,
                     (6371 * acos(
                         cos(radians(?)) * cos(radians(sos_requests.latitude)) *
                         cos(radians(sos_requests.longitude) - radians(?)) +
                         sin(radians(?)) * sin(radians(sos_requests.latitude))
                     )) AS distance
                 ", [$donorLat, $donorLng, $donorLat])
-                ->having('distance', '<=', DB::raw('sos_requests.radius_km'))
+                ->havingRaw('distance <= radius_km')
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($sosRequest) {
@@ -202,13 +203,14 @@ class UserController extends Controller
                 ->with('user')
                 ->selectRaw("
                     sos_requests.*,
+                    sos_requests.radius_km,
                     (6371 * acos(
                         cos(radians(?)) * cos(radians(sos_requests.latitude)) *
                         cos(radians(sos_requests.longitude) - radians(?)) +
                         sin(radians(?)) * sin(radians(sos_requests.latitude))
                     )) AS distance
                 ", [$donorLat, $donorLng, $donorLat])
-                ->having('distance', '<=', DB::raw('sos_requests.radius_km'))
+                ->havingRaw('distance <= radius_km')
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($sosRequest) {
@@ -287,18 +289,19 @@ class UserController extends Controller
                         $donorLat = $user->latitude;
                         $donorLng = $user->longitude;
 
-                        $count = SosRequest::where('status', 'open')
+                        $count = SosRequest::where('status', 'active')
                             ->whereIn('blood', $compatibleBloodTypes)
                             ->where('created_at', '>=', now()->subHours(24))
                             ->selectRaw("
                                 sos_requests.*,
+                                sos_requests.radius_km,
                                 (6371 * acos(
                                     cos(radians(?)) * cos(radians(sos_requests.latitude)) *
                                     cos(radians(sos_requests.longitude) - radians(?)) +
                                     sin(radians(?)) * sin(radians(sos_requests.latitude))
                                 )) AS distance
                             ", [$donorLat, $donorLng, $donorLat])
-                            ->having('distance', '<=', DB::raw('sos_requests.radius_km'))
+                            ->havingRaw('distance <= radius_km')
                             ->count();
                     }
                 }
