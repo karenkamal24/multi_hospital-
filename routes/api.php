@@ -2,37 +2,45 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\HospitalRequestController;
+use App\Http\Controllers\DonationController;
+use App\Http\Controllers\HospitalController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\SosController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+// Authentication Endpoints
 Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
     Route::post('/login', [LoginController::class, 'login']);
 });
 
+// Protected Routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/profile', [UserController::class, 'profile']);
-    Route::get('/donations', [UserController::class, 'donationHistory']);
-    Route::get('/available-sos-cases', [UserController::class, 'getAvailableSosCases']);
-    Route::get('/new-cases-count', [UserController::class, 'getNewCasesCount']);
-    Route::post('/sos', [SosController::class, 'store']);
-    Route::post('/location', [SosController::class, 'updateLocation']);
+    // User Endpoints
+    Route::get('/user', [UserController::class, 'profile']);
 
-    // Hospital Requests Routes
-    Route::prefix('hospital-requests')->group(function () {
-        // Patient/Donor routes
-        Route::post('/', [HospitalRequestController::class, 'store']);
-        Route::post('/nearest', [HospitalRequestController::class, 'sendToNearest']);
-        Route::post('/both', [HospitalRequestController::class, 'sendBothRequests']);
-        Route::get('/find-nearest', [HospitalRequestController::class, 'findNearest']);
-        Route::get('/my-requests', [HospitalRequestController::class, 'myRequests']);
-        Route::get('/available-cases', [HospitalRequestController::class, 'getAvailableCases']);
-        Route::get('/new-count', [HospitalRequestController::class, 'getNewCasesCount']);
+    // Location Endpoints
+    Route::post('/location', [LocationController::class, 'updateLocation']);
 
-        // Hospital routes
-        Route::get('/', [HospitalRequestController::class, 'index']);
-        Route::post('/{id}/approve', [HospitalRequestController::class, 'approveOrReject']);
+    // SOS Endpoints
+    Route::prefix('sos')->group(function () {
+        Route::post('/', [SosController::class, 'store']);
+        Route::get('/available', [SosController::class, 'available']);
+        Route::get('/my-requests', [SosController::class, 'myRequests']);
+        Route::get('/history', [SosController::class, 'history']);
+        Route::get('/{sosRequest}', [SosController::class, 'show'])->where('sosRequest', '[0-9]+');
+        Route::post('/{sosRequest}/accept', [SosController::class, 'accept'])->where('sosRequest', '[0-9]+');
+        Route::get('/{sosRequest}/communication', [SosController::class, 'communication'])->where('sosRequest', '[0-9]+');
+    });
+
+    // Hospital Endpoints
+    Route::prefix('hospitals')->group(function () {
+        Route::post('/nearest', [HospitalController::class, 'nearest']);
+    });
+
+    // Donation History Endpoints
+    Route::prefix('donations')->group(function () {
+        Route::get('/history', [DonationController::class, 'history']);
     });
 });

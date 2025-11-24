@@ -27,6 +27,8 @@ class AuthService
             'blood' => $data['blood'] ?? null,
             'password' => Hash::make($data['password']),
             'fcm_token' => $data['fcm_token'] ?? null,
+            'latitude' => $data['latitude'] ?? null,
+            'longitude' => $data['longitude'] ?? null,
             'image' => $data['image'] ?? null,
         ]);
 

@@ -23,6 +23,7 @@ class Hospital extends Model
         'location',
         'latitude',
         'longitude',
+        'phone',
     ];
 
     /**

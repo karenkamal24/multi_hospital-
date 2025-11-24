@@ -15,12 +15,15 @@ class SosRequest extends Model
      */
     protected $fillable = [
         'user_id',
+        'accepted_donor_id',
+        'hospital_id',
         'type',
         'blood',
         'latitude',
         'longitude',
         'radius_km',
         'status',
+        'operation_status',
         'description',
     ];
 
@@ -38,5 +41,21 @@ class SosRequest extends Model
     public function hospitalRequests(): HasMany
     {
         return $this->hasMany(HospitalRequest::class);
+    }
+
+    /**
+     * Get the accepted donor for this SOS request.
+     */
+    public function acceptedDonor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'accepted_donor_id');
+    }
+
+    /**
+     * Get the hospital for this SOS request.
+     */
+    public function hospital(): BelongsTo
+    {
+        return $this->belongsTo(Hospital::class);
     }
 }

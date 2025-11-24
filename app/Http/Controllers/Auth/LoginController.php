@@ -24,20 +24,25 @@ class LoginController extends Controller
             $result = $this->authService->login($request->validated());
 
             return ApiResponse::success(
-                msg('login.success'),
+                [
+                    'ar' => 'تم تسجيل الدخول بنجاح',
+                    'en' => 'Login successful',
+                ],
                 [
                     'user' => new UserResource($result['user']),
                     'token' => $result['token'],
                 ]
             );
         } catch (\InvalidArgumentException $e) {
-            return ApiResponse::badRequest(
-                msg('login.invalid_credentials')
-            );
+            return ApiResponse::badRequest([
+                'ar' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+                'en' => 'Invalid email or password',
+            ]);
         } catch (\Exception $e) {
-            return ApiResponse::error(
-                msg('login.failed')
-            );
+            return ApiResponse::error([
+                'ar' => 'حدث خطأ أثناء تسجيل الدخول: ' . $e->getMessage(),
+                'en' => 'An error occurred during login: ' . $e->getMessage(),
+            ]);
         }
     }
 }

@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\SosRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Route;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,7 +23,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-       
+        // Route model binding for SOS requests
+        Route::bind('sosRequest', function ($value) {
+            return SosRequest::findOrFail($value);
+        });
+
         Gate::before(function ($user, $ability) {
             // التحقق من user_type أولاً
             if ($user && $user->user_type === 'super_admin') {

@@ -90,7 +90,7 @@ class UserController extends Controller
             $donorLat = $user->latitude;
             $donorLng = $user->longitude;
 
-            $sosRequests = SosRequest::where('status', 'open')
+            $sosRequests = SosRequest::where('status', 'active')
                 ->whereIn('blood', $compatibleBloodTypes)
                 ->with('user')
                 ->selectRaw("
@@ -197,7 +197,7 @@ class UserController extends Controller
             $donorLng = $user->longitude;
 
             // البحث عن طلبات SOS المفتوحة
-            $sosRequests = SosRequest::where('status', 'open')
+            $sosRequests = SosRequest::where('status', 'active')
                 ->whereIn('blood', $compatibleBloodTypes)
                 ->with('user')
                 ->selectRaw("

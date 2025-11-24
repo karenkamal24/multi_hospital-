@@ -21,21 +21,31 @@ class RegisterController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         try {
-            $user = $this->authService->register($request->validated());
+            $data = $request->validated();
+            $user = $this->authService->register($data);
+            $token = $user->createToken('auth-token')->plainTextToken;
 
             return ApiResponse::created(
-                msg('register.success'),
-                new UserResource($user)
+                [
+                    'ar' => 'تم التسجيل بنجاح',
+                    'en' => 'Registration successful',
+                ],
+                [
+                    'user' => new UserResource($user),
+                    'token' => $token,
+                ]
             );
 
         } catch (\InvalidArgumentException $e) {
-            return ApiResponse::badRequest(
-                msg('register.user_type_invalid')
-            );
+            return ApiResponse::badRequest([
+                'ar' => $e->getMessage(),
+                'en' => $e->getMessage(),
+            ]);
         } catch (\Exception $e) {
-            return ApiResponse::error(
-                msg('register.failed')
-            );
+            return ApiResponse::error([
+                'ar' => 'حدث خطأ أثناء التسجيل: ' . $e->getMessage(),
+                'en' => 'An error occurred during registration: ' . $e->getMessage(),
+            ]);
         }
     }
 }
