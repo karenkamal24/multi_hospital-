@@ -158,16 +158,21 @@ class HospitalRequestController extends Controller
                     if (!empty($compatibleBloodTypes)) {
                         $sosRequest = SosRequest::where('status', 'open')
                             ->whereIn('blood', $compatibleBloodTypes)
+                            ->whereRaw("
+                                (6371 * acos(
+                                    cos(radians(?)) * cos(radians(sos_requests.latitude)) *
+                                    cos(radians(sos_requests.longitude) - radians(?)) +
+                                    sin(radians(?)) * sin(radians(sos_requests.latitude))
+                                )) <= sos_requests.radius_km
+                            ", [$user->latitude, $user->longitude, $user->latitude])
                             ->selectRaw("
                                 sos_requests.*,
-                                sos_requests.radius_km,
                                 (6371 * acos(
                                     cos(radians(?)) * cos(radians(sos_requests.latitude)) *
                                     cos(radians(sos_requests.longitude) - radians(?)) +
                                     sin(radians(?)) * sin(radians(sos_requests.latitude))
                                 )) AS distance
                             ", [$user->latitude, $user->longitude, $user->latitude])
-                            ->havingRaw('distance <= radius_km')
                             ->orderBy('created_at', 'desc')
                             ->first();
                     }

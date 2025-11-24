@@ -65,7 +65,13 @@ class Hospital extends Model
             ->orderBy('distance');
 
         if ($maxDistanceKm !== null) {
-            $query->having('distance', '<=', $maxDistanceKm);
+            $query->whereRaw("
+                (6371 * acos(
+                    cos(radians(?)) * cos(radians(latitude)) *
+                    cos(radians(longitude) - radians(?)) +
+                    sin(radians(?)) * sin(radians(latitude))
+                )) <= ?
+            ", [$latitude, $longitude, $latitude, $maxDistanceKm]);
         }
 
         return $query->first();
@@ -96,7 +102,13 @@ class Hospital extends Model
             ->limit($limit);
 
         if ($maxDistanceKm !== null) {
-            $query->having('distance', '<=', $maxDistanceKm);
+            $query->whereRaw("
+                (6371 * acos(
+                    cos(radians(?)) * cos(radians(latitude)) *
+                    cos(radians(longitude) - radians(?)) +
+                    sin(radians(?)) * sin(radians(latitude))
+                )) <= ?
+            ", [$latitude, $longitude, $latitude, $maxDistanceKm]);
         }
 
         return $query->get();

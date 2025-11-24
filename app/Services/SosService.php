@@ -80,6 +80,13 @@ class SosService
             ->whereNotNull('longitude')
             ->whereNotNull('fcm_token')
             ->whereIn('blood', $compatibleBloodTypes)
+            ->whereRaw("
+                (6371 * acos(
+                    cos(radians(?)) * cos(radians(latitude)) *
+                    cos(radians(longitude) - radians(?)) +
+                    sin(radians(?)) * sin(radians(latitude))
+                )) <= ?
+            ", [$latitude, $longitude, $latitude, $radiusKm])
             ->selectRaw("
                 users.*,
                 (6371 * acos(
@@ -88,8 +95,13 @@ class SosService
                     sin(radians(?)) * sin(radians(latitude))
                 )) AS distance
             ", [$latitude, $longitude, $latitude])
-            ->having('distance', '<=', $radiusKm)
-            ->orderBy('distance')
+            ->orderByRaw("
+                (6371 * acos(
+                    cos(radians(?)) * cos(radians(latitude)) *
+                    cos(radians(longitude) - radians(?)) +
+                    sin(radians(?)) * sin(radians(latitude))
+                ))
+            ", [$latitude, $longitude, $latitude])
             ->get()
             ->toArray();
     }
@@ -114,16 +126,21 @@ class SosService
         return SosRequest::where('status', 'active')
             ->whereIn('blood', $compatibleBloodTypes)
             ->with('user:id,name,phone,blood')
+            ->whereRaw("
+                (6371 * acos(
+                    cos(radians(?)) * cos(radians(sos_requests.latitude)) *
+                    cos(radians(sos_requests.longitude) - radians(?)) +
+                    sin(radians(?)) * sin(radians(sos_requests.latitude))
+                )) <= sos_requests.radius_km
+            ", [$donorLat, $donorLng, $donorLat])
             ->selectRaw("
                 sos_requests.*,
-                sos_requests.radius_km,
                 (6371 * acos(
                     cos(radians(?)) * cos(radians(sos_requests.latitude)) *
                     cos(radians(sos_requests.longitude) - radians(?)) +
                     sin(radians(?)) * sin(radians(sos_requests.latitude))
                 )) AS distance
             ", [$donorLat, $donorLng, $donorLat])
-            ->havingRaw('distance <= radius_km')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($sosRequest) {
