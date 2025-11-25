@@ -10,6 +10,7 @@
         "bezhansalleh/filament-shield": "^4.0",
         "filament/filament": "^4.0",
         "kreait/firebase-php": "*",
+        "kreait/laravel-firebase": "^6.1",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10.1",
