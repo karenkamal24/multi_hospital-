@@ -37,8 +37,8 @@ class DonationController extends Controller
                     'ar' => 'تم جلب سجل التبرعات بنجاح',
                     'en' => 'Donation history retrieved successfully',
                 ],
-                SosRequestResource::collection($donations),
-                $donations
+                $donations,
+                SosRequestResource::class
             );
         } catch (\Exception $e) {
             return ApiResponse::error([

@@ -304,7 +304,10 @@ class SosService
     public function getDonationHistory(User $donor, ?string $status = null): \Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         $query = SosRequest::where('accepted_donor_id', $donor->id)
-            ->with(['user:id,name,blood', 'hospital:id,name']);
+            ->with([
+                'user:id,name,phone,email,blood',
+                'hospital:id,name,address,latitude,longitude,phone'
+            ]);
 
         if ($status && $status !== 'all') {
             $query->where('status', $status);

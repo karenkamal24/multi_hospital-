@@ -12,10 +12,10 @@ public static function send(
     $code = Response::HTTP_OK,
     $message = 'Success response',
     $data = [],
-    $meta = null,
+    $resource = null,
     $errors = []
 ): JsonResponse {
-    $data = self::prepareData($data, null);
+    $data = self::prepareData($data, $resource);
 
     // تحديد اللغة من الـheader
     $locale = self::getLocaleFromRequest();
@@ -30,7 +30,7 @@ public static function send(
     $response = [
         'status' => $code,
         'message' => $finalMessage,
-        'meta' => $meta ?? ($data['meta'] ?? null),
+        'meta' => $data['meta'] ?? null,
         'data' => $data['items'],
     ];
 
@@ -92,7 +92,7 @@ protected static function getLocaleFromRequest(): string
 
     public static function validationError(string|array $message, $errors = [], $resource = null): JsonResponse
     {
-        return self::send(Response::HTTP_UNPROCESSABLE_ENTITY, $message, $errors, $resource);
+        return self::send(Response::HTTP_UNPROCESSABLE_ENTITY, $message, [], $resource, $errors);
     }
 
     public static function error(string|array $message): JsonResponse
@@ -121,13 +121,10 @@ protected static function getLocaleFromRequest(): string
             ];
         }
 
-        // If data is a Resource collection or single Resource, resolve it to array
-        if ($data instanceof \Illuminate\Http\Resources\Json\ResourceCollection) {
-            return ['items' => $data->resolve()];
-        }
-
-        if ($data instanceof \Illuminate\Http\Resources\Json\JsonResource) {
-            return ['items' => $data->resolve()];
+        // If data is a Resource collection or single Resource, return it directly
+        if ($data instanceof \Illuminate\Http\Resources\Json\ResourceCollection ||
+            $data instanceof \Illuminate\Http\Resources\Json\JsonResource) {
+            return ['items' => $data];
         }
 
         return ['items' => $data];
