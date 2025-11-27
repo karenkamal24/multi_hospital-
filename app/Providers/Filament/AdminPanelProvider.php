@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('2.5rem')
             ->favicon(asset('images/logo.png'))
+            ->globalSearch(false)
             ->colors([
                 'primary' => [
                     50 => '#FFCDD2',
@@ -60,7 +61,7 @@ class AdminPanelProvider extends PanelProvider
                 'warning' => '#FFA000',
                 'danger' => '#D32F2F',
             ])
-            ->darkMode(false)
+            ->darkMode(true)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
