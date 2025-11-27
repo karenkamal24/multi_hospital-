@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FindNearestHospitalRequest;
 use App\Http\Resources\HospitalResource;
+use App\Http\Resources\SosRequestResource;
 use App\Services\HospitalService;
+use App\Services\SosService;
 use App\Utils\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +14,8 @@ use Illuminate\Support\Facades\Auth;
 class HospitalController extends Controller
 {
     public function __construct(
-        private HospitalService $hospitalService
+        private HospitalService $hospitalService,
+        private SosService $sosService
     ) {}
 
     /**
@@ -46,6 +49,49 @@ class HospitalController extends Controller
             return ApiResponse::error([
                 'ar' => 'حدث خطأ أثناء البحث عن المستشفى: ' . $e->getMessage(),
                 'en' => 'An error occurred while searching for hospital: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Get SOS requests for hospital
+     */
+    public function sosRequests(): JsonResponse
+    {
+        try {
+            $user = Auth::user();
+
+            if ($user->user_type !== 'hospital') {
+                return ApiResponse::forbidden([
+                    'ar' => 'فقط المستشفى يمكنه عرض طلبات SOS',
+                    'en' => 'Only hospitals can view SOS requests',
+                ]);
+            }
+
+            $hospital = $user->hospital;
+
+            if (!$hospital) {
+                return ApiResponse::notFound([
+                    'ar' => 'المستشفى غير موجود',
+                    'en' => 'Hospital not found',
+                ]);
+            }
+
+            $status = request()->get('status');
+            $sosRequests = $this->sosService->getHospitalSosRequests($hospital, $status);
+
+            return ApiResponse::success(
+                [
+                    'ar' => 'تم جلب طلبات SOS بنجاح',
+                    'en' => 'SOS requests retrieved successfully',
+                ],
+                SosRequestResource::collection($sosRequests),
+                $sosRequests
+            );
+        } catch (\Exception $e) {
+            return ApiResponse::error([
+                'ar' => 'حدث خطأ أثناء جلب الطلبات: ' . $e->getMessage(),
+                'en' => 'An error occurred while retrieving requests: ' . $e->getMessage(),
             ]);
         }
     }

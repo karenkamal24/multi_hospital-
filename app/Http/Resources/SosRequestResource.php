@@ -25,6 +25,7 @@ class SosRequestResource extends JsonResource
                     'phone' => $this->user->phone,
                     'email' => $this->user->email,
                     'blood' => $this->user->blood,
+                    'image' => $this->user->image ? asset('storage/' . $this->user->image) : null,
                 ];
             }),
             'accepted_donor' => $this->whenLoaded('acceptedDonor', function () {
@@ -34,6 +35,7 @@ class SosRequestResource extends JsonResource
                     'phone' => $this->acceptedDonor->phone,
                     'email' => $this->acceptedDonor->email,
                     'blood' => $this->acceptedDonor->blood,
+                    'image' => $this->acceptedDonor->image ? asset('storage/' . $this->acceptedDonor->image) : null,
                 ];
             }),
             'hospital' => $this->whenLoaded('hospital', function () {

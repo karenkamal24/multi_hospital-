@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Hospital Endpoints
     Route::prefix('hospitals')->group(function () {
         Route::post('/nearest', [HospitalController::class, 'nearest']);
+        Route::get('/sos-requests', [HospitalController::class, 'sosRequests']);
     });
 
     // Donation History Endpoints

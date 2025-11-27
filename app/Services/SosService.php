@@ -216,9 +216,17 @@ class SosService
             $hospital->longitude
         );
 
-        // Send notifications to patient and donor
+        // Send notifications to patient and donor (in background, don't block the response)
         $patient = $sosRequest->user;
-        $this->notificationService->sendAcceptanceNotification($sosRequest, $patient, $donor, $hospital);
+        try {
+            $this->notificationService->sendAcceptanceNotification($sosRequest, $patient, $donor, $hospital);
+        } catch (\Exception $e) {
+            // Log error but don't fail the request
+            \Illuminate\Support\Facades\Log::warning('Failed to send notifications, but request was accepted', [
+                'sos_request_id' => $sosRequest->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return [
             'sos_request' => $sosRequest->fresh(['acceptedDonor', 'hospital']),
@@ -306,6 +314,26 @@ class SosService
         $query = SosRequest::where('accepted_donor_id', $donor->id)
             ->with([
                 'user:id,name,phone,email,blood',
+                'hospital:id,name,address,latitude,longitude,phone'
+            ]);
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        return $query->orderBy('created_at', 'desc')
+            ->paginate(request()->get('per_page', 10));
+    }
+
+    /**
+     * Get SOS requests for a hospital
+     */
+    public function getHospitalSosRequests(Hospital $hospital, ?string $status = null): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        $query = SosRequest::where('hospital_id', $hospital->id)
+            ->with([
+                'user:id,name,phone,email,blood,image',
+                'acceptedDonor:id,name,phone,email,blood,image',
                 'hospital:id,name,address,latitude,longitude,phone'
             ]);
 

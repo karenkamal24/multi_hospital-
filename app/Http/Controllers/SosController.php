@@ -138,14 +138,13 @@ class SosController extends Controller
                     'en' => 'Only donors can accept SOS requests',
                 ]);
             }
-            $result = $this->sosService->acceptSosRequest($sosRequest, $user);
+            $this->sosService->acceptSosRequest($sosRequest, $user);
 
             return ApiResponse::success(
                 [
-                    'ar' => 'تم قبول طلب SOS بنجاح',
-                    'en' => 'SOS request accepted successfully',
-                ],
-                $result
+                    'ar' => 'تم قبول الطلب',
+                    'en' => 'Request accepted successfully',
+                ]
             );
         } catch (\InvalidArgumentException $e) {
             return ApiResponse::badRequest([
