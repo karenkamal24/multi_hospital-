@@ -16,18 +16,18 @@ class StatsOverview extends BaseWidget
         $user = Auth::user();
         $hospital = null;
 
-        // إذا كان المستخدم من نوع hospital، احصل على مستشفاه
+
         if ($user && $user->user_type === 'hospital') {
             $hospital = $user->hospital;
         }
 
-        // بناء الاستعلامات بناءً على نوع المستخدم
+
         $sosRequestQuery = SosRequest::query();
 
-        // إذا كان هناك مستشفى محدد، فلتر البيانات بناءً عليه
+
         if ($hospital) {
             $sosRequestQuery->where('hospital_id', $hospital->id);
-            // للمستخدمين: يمكن إضافة فلترة إضافية إذا لزم الأمر
+
         }
 
         $completedRequests = (clone $sosRequestQuery)->where('status', 'completed')->count();
@@ -35,12 +35,10 @@ class StatsOverview extends BaseWidget
         $activeRequests = (clone $sosRequestQuery)->where('status', 'active')->count();
         $totalRequests = $sosRequestQuery->count();
 
-        // إحصائيات المستشفيات (فقط للمشرف)
         $totalHospitals = $user && $user->user_type === 'super_admin'
             ? Hospital::count()
             : ($hospital ? 1 : 0);
 
-        // إحصائيات المستخدمين (فقط للمشرف)
         $totalUsers = $user && $user->user_type === 'super_admin'
             ? User::count()
             : 0;
@@ -79,7 +77,6 @@ class StatsOverview extends BaseWidget
                 ->chart([3, 2, 4, 5, 3, 4, 2]),
         ];
 
-        // إحصائيات إضافية للمشرف فقط
         if ($user && $user->user_type === 'super_admin') {
             $stats[] = Stat::make('إجمالي المستشفيات', $totalHospitals)
                 ->description('المستشفيات المسجلة')
