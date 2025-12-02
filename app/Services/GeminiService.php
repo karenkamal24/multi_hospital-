@@ -130,9 +130,6 @@ class GeminiService
         return null;
     }
 
-    /**
-     * بناء البـرومبت (التعليمات والنص)
-     */
     private function buildPrompt(string $prompt, array $context = []): string
     {
         $systemPrompt = "You are an AI Assistant for WHB (وهب) - a smart blood and organ donation mobile application that connects patients, donors, and hospitals in real-time to save lives.

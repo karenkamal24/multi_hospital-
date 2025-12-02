@@ -126,12 +126,20 @@ class SosRequestResource extends Resource
                             return 'لا توجد معلومات';
                         }
                         $user = $record->user;
-                        $imageUrl = $user->image ? asset('storage/' . $user->image) : null;
+                        $imageUrl = null;
+                        if ($user->image) {
+                            // إذا كان رابط إنترنت مباشر (يبدأ بـ http:// أو https://)
+                            if (str_starts_with($user->image, 'http://') || str_starts_with($user->image, 'https://')) {
+                                $imageUrl = $user->image;
+                            } else {
+                                // إذا كان مسار ملف محلي
+                                $imageUrl = asset('storage/' . $user->image);
+                            }
+                        }
+                        $imageId = 'patient-image-' . $record->id;
                         $imageHtml = $imageUrl ?
                             '<div style="text-align: center; margin-bottom: 15px;">
-                                <a href="' . $imageUrl . '" target="_blank" style="display: inline-block; cursor: pointer;">
-                                    <img src="' . $imageUrl . '" style="max-width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.2s;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'" />
-                                </a>
+                                <img id="' . $imageId . '" src="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '" style="max-width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'" onclick="openImageModal(\'' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '\')" />
                                 <p style="margin-top: 10px; color: #6b7280; font-size: 12px;">اضغط على الصورة لعرضها بالحجم الكامل</p>
                             </div>' :
                             '<div style="text-align: center; margin-bottom: 15px; color: #9ca3af;"><p>لا توجد صورة</p></div>';
@@ -156,7 +164,33 @@ class SosRequestResource extends Resource
                         <style>
                             details summary::-webkit-details-marker { display: none; }
                             details[open] summary span:last-child { transform: rotate(180deg); }
-                        </style>';
+                            .image-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); }
+                            .image-modal-content { margin: auto; display: block; max-width: 90%; max-height: 90%; margin-top: 5%; }
+                            .image-modal-close { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; }
+                            .image-modal-close:hover { color: #bbb; }
+                        </style>
+                        <div id="imageModal" class="image-modal" onclick="this.style.display=\'none\'">
+                            <span class="image-modal-close">&times;</span>
+                            <img class="image-modal-content" id="modalImage">
+                        </div>
+                        <script>
+                            if (typeof openImageModal === "undefined") {
+                                function openImageModal(imageUrl) {
+                                    var modal = document.getElementById("imageModal");
+                                    var modalImg = document.getElementById("modalImage");
+                                    if (modal && modalImg) {
+                                        modal.style.display = "block";
+                                        modalImg.src = imageUrl;
+                                    }
+                                }
+                                window.onclick = function(event) {
+                                    var modal = document.getElementById("imageModal");
+                                    if (event.target == modal) {
+                                        modal.style.display = "none";
+                                    }
+                                }
+                            }
+                        </script>';
 
                         return new \Illuminate\Support\HtmlString($html);
                     })
@@ -171,12 +205,20 @@ class SosRequestResource extends Resource
                             return 'لم يتم القبول بعد';
                         }
                         $donor = $record->acceptedDonor;
-                        $imageUrl = $donor->image ? asset('storage/' . $donor->image) : null;
+                        $imageUrl = null;
+                        if ($donor->image) {
+                            // إذا كان رابط إنترنت مباشر (يبدأ بـ http:// أو https://)
+                            if (str_starts_with($donor->image, 'http://') || str_starts_with($donor->image, 'https://')) {
+                                $imageUrl = $donor->image;
+                            } else {
+                                // إذا كان مسار ملف محلي
+                                $imageUrl = asset('storage/' . $donor->image);
+                            }
+                        }
+                        $imageId = 'donor-image-' . $record->id;
                         $imageHtml = $imageUrl ?
                             '<div style="text-align: center; margin-bottom: 15px;">
-                                <a href="' . $imageUrl . '" target="_blank" style="display: inline-block; cursor: pointer;">
-                                    <img src="' . $imageUrl . '" style="max-width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.2s;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'" />
-                                </a>
+                                <img id="' . $imageId . '" src="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '" style="max-width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'" onclick="openImageModal(\'' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '\')" />
                                 <p style="margin-top: 10px; color: #6b7280; font-size: 12px;">اضغط على الصورة لعرضها بالحجم الكامل</p>
                             </div>' :
                             '<div style="text-align: center; margin-bottom: 15px; color: #9ca3af;"><p>لا توجد صورة</p></div>';
@@ -201,7 +243,33 @@ class SosRequestResource extends Resource
                         <style>
                             details summary::-webkit-details-marker { display: none; }
                             details[open] summary span:last-child { transform: rotate(180deg); }
-                        </style>';
+                            .image-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); }
+                            .image-modal-content { margin: auto; display: block; max-width: 90%; max-height: 90%; margin-top: 5%; }
+                            .image-modal-close { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; }
+                            .image-modal-close:hover { color: #bbb; }
+                        </style>
+                        <div id="imageModal" class="image-modal" onclick="this.style.display=\'none\'">
+                            <span class="image-modal-close">&times;</span>
+                            <img class="image-modal-content" id="modalImage">
+                        </div>
+                        <script>
+                            if (typeof openImageModal === "undefined") {
+                                function openImageModal(imageUrl) {
+                                    var modal = document.getElementById("imageModal");
+                                    var modalImg = document.getElementById("modalImage");
+                                    if (modal && modalImg) {
+                                        modal.style.display = "block";
+                                        modalImg.src = imageUrl;
+                                    }
+                                }
+                                window.onclick = function(event) {
+                                    var modal = document.getElementById("imageModal");
+                                    if (event.target == modal) {
+                                        modal.style.display = "none";
+                                    }
+                                }
+                            }
+                        </script>';
 
                         return new \Illuminate\Support\HtmlString($html);
                     })
@@ -225,17 +293,7 @@ class SosRequestResource extends Resource
                     ->sortable()
                     ->weight('bold'),
 
-                Tables\Columns\ImageColumn::make('user.image')
-                    ->label('صورة هوية المريض')
-                    ->circular()
-                    ->defaultImageUrl(url('/images/default-avatar.png'))
-                    ->getStateUsing(function ($record) {
-                        if ($record->user && $record->user->image) {
-                            return asset('storage/' . $record->user->image);
-                        }
-                        return null;
-                    })
-                    ->toggleable(),
+
 
                 Tables\Columns\TextColumn::make('user.phone')
                     ->label('هاتف المريض')
@@ -250,18 +308,7 @@ class SosRequestResource extends Resource
                     ->weight('bold')
                     ->placeholder('لم يتم القبول بعد'),
 
-                Tables\Columns\ImageColumn::make('acceptedDonor.image')
-                    ->label('صورة هوية المتبرع')
-                    ->circular()
-                    ->defaultImageUrl(url('/images/default-avatar.png'))
-                    ->getStateUsing(function ($record) {
-                        if ($record->acceptedDonor && $record->acceptedDonor->image) {
-                            return asset('storage/' . $record->acceptedDonor->image);
-                        }
-                        return null;
-                    })
-                    ->toggleable()
-                    ->placeholder('لم يتم القبول بعد'),
+
 
                 Tables\Columns\TextColumn::make('acceptedDonor.phone')
                     ->label('هاتف المتبرع')
@@ -463,92 +510,7 @@ class SosRequestResource extends Resource
                 ->visible(fn () => Auth::check() && Auth::user()?->user_type === 'super_admin'),
             ])
             ->actions([
-                Actions\Action::make('approve')
-                    ->label('موافقة')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->action(function (SosRequest $record) {
-                        $record->update([
-                            'status' => 'completed',
-                        ]);
-
-                        // إرسال إشعار للمتبرع
-                        $notificationService = new \App\Services\NotificationService();
-                        $notificationService->sendApprovalNotification($record);
-
-                        \Filament\Notifications\Notification::make()
-                            ->title('تم الموافقة بنجاح')
-                            ->success()
-                            ->send();
-                    })
-                    ->visible(fn (SosRequest $record) =>
-                        $record->status === 'pending' &&
-                        $record->accepted_donor_id !== null
-                    ),
-
-                Actions\Action::make('reject')
-                    ->label('رفض')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->action(function (SosRequest $record) {
-                        $record->update([
-                            'status' => 'cancelled',
-                        ]);
-
-                        \Filament\Notifications\Notification::make()
-                            ->title('تم الرفض')
-                            ->success()
-                            ->send();
-                    })
-                    ->visible(fn (SosRequest $record) =>
-                        $record->status === 'pending' &&
-                        $record->accepted_donor_id !== null
-                    ),
-
                 Actions\Action::make('complete_operation')
-                    ->label('اكتملت العملية')
-                    ->icon('heroicon-o-check-badge')
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->action(function (SosRequest $record) {
-                        $record->update([
-                            'operation_status' => 'completed',
-                            'status' => 'completed',
-                        ]);
-
-                        \Filament\Notifications\Notification::make()
-                            ->title('تم تحديث حالة العملية')
-                            ->success()
-                            ->send();
-                    })
-                    ->visible(fn (SosRequest $record) =>
-                        $record->status === 'pending' &&
-                        $record->operation_status !== 'completed'
-                    ),
-
-                Actions\Action::make('cancel_operation')
-                    ->label('لم تكتمل العملية')
-                    ->icon('heroicon-o-x-mark')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->action(function (SosRequest $record) {
-                        $record->update([
-                            'operation_status' => 'cancelled',
-                        ]);
-
-                        \Filament\Notifications\Notification::make()
-                            ->title('تم إلغاء العملية')
-                            ->success()
-                            ->send();
-                    })
-                    ->visible(fn (SosRequest $record) =>
-                        $record->status === 'pending' &&
-                        $record->operation_status !== 'cancelled'
-                    ),
-
-                Actions\Action::make('complete_operation_status')
                     ->label('اكتملت العملية')
                     ->icon('heroicon-o-check-badge')
                     ->color('success')
@@ -573,6 +535,26 @@ class SosRequestResource extends Resource
                     ->visible(fn (SosRequest $record) =>
                         $record->operation_status !== 'completed' &&
                         $record->status !== 'completed'
+                    ),
+
+                Actions\Action::make('cancel_operation')
+                    ->label('لم تكتمل العملية')
+                    ->icon('heroicon-o-x-mark')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->action(function (SosRequest $record) {
+                        $record->update([
+                            'operation_status' => 'cancelled',
+                        ]);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('تم إلغاء العملية')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (SosRequest $record) =>
+                        $record->status === 'pending' &&
+                        $record->operation_status !== 'cancelled'
                     ),
 
                 Actions\ViewAction::make(),
