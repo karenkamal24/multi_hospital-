@@ -128,8 +128,12 @@ class SosRequestResource extends Resource
                         $user = $record->user;
                         $imageUrl = null;
                         if ($user->image) {
+                            // إذا كان base64 encoded image (يبدأ بـ data:image/)
+                            if (str_starts_with($user->image, 'data:image/')) {
+                                $imageUrl = $user->image;
+                            }
                             // إذا كان رابط إنترنت مباشر (يبدأ بـ http:// أو https://)
-                            if (str_starts_with($user->image, 'http://') || str_starts_with($user->image, 'https://')) {
+                            elseif (str_starts_with($user->image, 'http://') || str_starts_with($user->image, 'https://')) {
                                 $imageUrl = $user->image;
                             } else {
                                 // إذا كان مسار ملف محلي
@@ -137,9 +141,11 @@ class SosRequestResource extends Resource
                             }
                         }
                         $imageId = 'patient-image-' . $record->id;
+                        // استخدام data attribute لتجنب مشاكل طول base64 في onclick
+                        $imageDataAttr = $imageUrl ? ' data-image-url="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '"' : '';
                         $imageHtml = $imageUrl ?
                             '<div style="text-align: center; margin-bottom: 15px;">
-                                <img id="' . $imageId . '" src="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '" style="max-width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'" onclick="openImageModal(\'' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '\')" />
+                                <img id="' . $imageId . '" src="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '"' . $imageDataAttr . ' class="viewable-image" style="max-width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'" />
                                 <p style="margin-top: 10px; color: #6b7280; font-size: 12px;">اضغط على الصورة لعرضها بالحجم الكامل</p>
                             </div>' :
                             '<div style="text-align: center; margin-bottom: 15px; color: #9ca3af;"><p>لا توجد صورة</p></div>';
@@ -183,6 +189,15 @@ class SosRequestResource extends Resource
                                         modalImg.src = imageUrl;
                                     }
                                 }
+                                // استخدام event delegation لتجنب مشاكل طول base64
+                                document.addEventListener("click", function(event) {
+                                    if (event.target.classList.contains("viewable-image")) {
+                                        var imageUrl = event.target.getAttribute("data-image-url");
+                                        if (imageUrl) {
+                                            openImageModal(imageUrl);
+                                        }
+                                    }
+                                });
                                 window.onclick = function(event) {
                                     var modal = document.getElementById("imageModal");
                                     if (event.target == modal) {
@@ -207,8 +222,12 @@ class SosRequestResource extends Resource
                         $donor = $record->acceptedDonor;
                         $imageUrl = null;
                         if ($donor->image) {
+                            // إذا كان base64 encoded image (يبدأ بـ data:image/)
+                            if (str_starts_with($donor->image, 'data:image/')) {
+                                $imageUrl = $donor->image;
+                            }
                             // إذا كان رابط إنترنت مباشر (يبدأ بـ http:// أو https://)
-                            if (str_starts_with($donor->image, 'http://') || str_starts_with($donor->image, 'https://')) {
+                            elseif (str_starts_with($donor->image, 'http://') || str_starts_with($donor->image, 'https://')) {
                                 $imageUrl = $donor->image;
                             } else {
                                 // إذا كان مسار ملف محلي
@@ -216,9 +235,11 @@ class SosRequestResource extends Resource
                             }
                         }
                         $imageId = 'donor-image-' . $record->id;
+                        // استخدام data attribute لتجنب مشاكل طول base64 في onclick
+                        $imageDataAttr = $imageUrl ? ' data-image-url="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '"' : '';
                         $imageHtml = $imageUrl ?
                             '<div style="text-align: center; margin-bottom: 15px;">
-                                <img id="' . $imageId . '" src="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '" style="max-width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'" onclick="openImageModal(\'' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '\')" />
+                                <img id="' . $imageId . '" src="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '"' . $imageDataAttr . ' class="viewable-image" style="max-width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'" />
                                 <p style="margin-top: 10px; color: #6b7280; font-size: 12px;">اضغط على الصورة لعرضها بالحجم الكامل</p>
                             </div>' :
                             '<div style="text-align: center; margin-bottom: 15px; color: #9ca3af;"><p>لا توجد صورة</p></div>';
@@ -262,6 +283,15 @@ class SosRequestResource extends Resource
                                         modalImg.src = imageUrl;
                                     }
                                 }
+                                // استخدام event delegation لتجنب مشاكل طول base64
+                                document.addEventListener("click", function(event) {
+                                    if (event.target.classList.contains("viewable-image")) {
+                                        var imageUrl = event.target.getAttribute("data-image-url");
+                                        if (imageUrl) {
+                                            openImageModal(imageUrl);
+                                        }
+                                    }
+                                });
                                 window.onclick = function(event) {
                                     var modal = document.getElementById("imageModal");
                                     if (event.target == modal) {
