@@ -50,7 +50,7 @@ class HospitalResource extends Resource
                 Forms\Components\Textarea::make('address')
                     ->label('العنوان التفصيلي')
                     ->rows(3)
-                    ->placeholder('مثال: شارع الهرم، الجيزة، مصر')
+                    ->placeholder('مثال : شارع التخصصي ، الرياض ، السعودية')
                     ->columnSpanFull(),
 
                 Forms\Components\TextInput::make('latitude')
@@ -89,7 +89,7 @@ class HospitalResource extends Resource
                     ->label('الموقع (نص)')
                     ->maxLength(255)
                     ->placeholder('سيتم ملؤه تلقائياً من الإحداثيات أو أدخل موقع نصي')
-                    ->helperText('يمكنك إدخال موقع نصي بدلاً من الإحداثيات (مثال: القاهرة، مصر)')
+                    ->helperText('يمكنك إدخال موقع نصي بدلاً من الإحداثيات (مثال الرياض والسعوديه )')
                     ->columnSpanFull(),
             ])
             ->columns(2);
